@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 
-const part1 = true;
+const part1 = false;
 const lines = readFileSync(path.join(import.meta.dirname, "input.txt"), {
   encoding: "utf-8",
 });
@@ -17,26 +17,7 @@ const enum State {
   Error,
 }
 
-const getState = (
-  elem: number,
-  prevElem: number,
-  increasing: State | null
-): State => {
-  const diff = elem - prevElem;
-  const absDiff = Math.abs(diff);
-  const safe = 0 < absDiff && absDiff < 4;
-  const currentState = diff < 0 ? State.Decreasing : State.Increasing;
-  const state = !safe
-    ? State.Error
-    : increasing === null
-    ? currentState
-    : increasing === currentState
-    ? currentState
-    : State.Error;
-  return state;
-};
-
-const resp = reports.filter((report) => {
+const isSafe = (report: number[]): boolean => {
   const { diffs } = report.reduce<{ prevElem: number | null; diffs: number[] }>(
     ({ prevElem, diffs }, elem) => {
       if (prevElem === null) {
@@ -52,6 +33,18 @@ const resp = reports.filter((report) => {
   return diffs.every(
     (e) => e * diffs[0] > 0 && 0 < Math.abs(e) && Math.abs(e) < 4
   );
+};
+
+const resp = reports.filter((report) => {
+  let reportIsSafe = isSafe(report);
+  if (!part1 && !reportIsSafe) {
+    for (let i = 0; i < report.length; i++) {
+      reportIsSafe =
+        reportIsSafe || isSafe(report.filter((_, index) => index !== i));
+    }
+  }
+
+  return reportIsSafe;
 }).length;
 
 console.log(`Number of safe reports ${resp}`);
