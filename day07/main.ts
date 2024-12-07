@@ -32,7 +32,14 @@ const combine = ({
     numbers,
     index: index + 1,
     expectedResult,
-  });
+  }) || (!part1 && (
+    combine({
+      currentValue: parseInt(`${currentValue}${numbers[index]}`),
+      numbers,
+      index: index + 1,
+      expectedResult,
+    })
+  ));
 };
 
 const result = input
@@ -40,7 +47,6 @@ const result = input
   .map((line) => {
     const [res, numbersRaw] = line.split(":");
     const numbers = numbersRaw.trim().split(" ").map(e => parseInt(e.trim()));
-    // console.log(`Res: "${res}", ""`, numbers)
     return { res: parseInt(res), numbers };
   })
   .filter(({ res, numbers }) => {
