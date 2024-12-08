@@ -1,8 +1,8 @@
 import { readFileSync } from "fs";
 import path from "path";
 
-const part1 = true;
-const input = readFileSync(path.join(import.meta.dirname, "input.txt"), {
+const part1 = false;
+const input = readFileSync(path.join(import.meta.dirname, "test.txt"), {
   encoding: "utf-8",
 });
 
@@ -69,13 +69,26 @@ const bounds: Coord = {
 for (const [key, keyLocations] of Object.entries(locations)) {
   for (const [left, right] of pairwise(keyLocations)) {
     const distance = getDifference(left, right);
-    const superLeft = getDifference(distance, left);
-    const superRight = getSum(right, distance);
-    if (boundCheck(superLeft, bounds)) {
-      antinodeLocations.push(superLeft);
-    }
-    if (boundCheck(superRight,bounds)) {
-      antinodeLocations.push(superRight);
+    if (part1) {
+      const superLeft = getDifference(distance, left);
+      const superRight = getSum(right, distance);
+      if (boundCheck(superLeft, bounds)) {
+        antinodeLocations.push(superLeft);
+      }
+      if (boundCheck(superRight,bounds)) {
+        antinodeLocations.push(superRight);
+      }
+    } else {
+      let currentLeft = left;
+      while (boundCheck(currentLeft, bounds)) {
+        antinodeLocations.push(currentLeft);
+        currentLeft = getDifference(distance, currentLeft);
+      }
+      let currentRight = right;
+      while (boundCheck(currentRight, bounds)) {
+        antinodeLocations.push(currentRight);
+        currentRight = getSum(currentRight, distance);
+      }
     }
   }
 }
